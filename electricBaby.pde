@@ -46,7 +46,7 @@ float tune(double currentFrequency, int intervalSemitones) {
 
 void pluck(int fret) {
     int keyInterval = frets[fret].indexOf(key);
-    frequency = tune(root, keyInterval);
+    frequency = tune(roots[fret], keyInterval);
     note = notes[keyInterval % 12];
     println(note + " : " + frequency);
     strings[fret].play(frequency, 0.6);
@@ -68,8 +68,11 @@ void keyPressed() {
   if (playing) {
     playing = false;
   }
-  if (frets[0].indexOf(key) != -1) {
-    pluck(0);
+  for (int i = 0; i < frets.length; i++) {
+    if (frets[i].indexOf(key) != -1) {
+      pluck(i);
+      break;
+    }
   }
   lastKey = key;
 }
@@ -89,16 +92,10 @@ void setup() {
   font = createFont("Open Sans", 48, true);
   envelope = new Env(this);
   float volume = 1;
-  strings[0] = new SqrOsc(this);
-  strings[0].amp(volume);
-  /*
-  secondString = new SqrOsc(this);
-  secondString.amp(volume);
-  thirdString = new SqrOsc(this);
-  thirdString.amp(volume);
-  fourthString = new SqrOsc(this);
-  fourthString.amp(volume);
-  */
+  for (int i = 0; i < strings.length; i++) {
+    strings[i] = new SqrOsc(this);
+    strings[i].amp(volume);
+  }
   frequency = tune(root, 0);
 }
 
