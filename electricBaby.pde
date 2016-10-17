@@ -7,15 +7,15 @@ double[] roots = { 110.0, 146.832, 195.997, 246.94 };
 boolean playing = false;
 char lastKey = ' ';
 StringList keysPressed;
-SqrOsc[] strings = new SqrOsc[4];
+SawOsc[] strings = new SawOsc[4];
 PFont font;
 String note;
 Env envelope;
 
 float attackTime = 0.0001;
-float sustainTime = 0.1;
-float sustainLevel = 0.1;
-float releaseTime = 0.2;
+float sustainTime = 0.15;
+float sustainLevel = 0.05;
+float releaseTime = 0.3;
 
 String[] frets = {
   "zxcvbnm,./",
@@ -52,6 +52,16 @@ void pluck(int fret) {
 
 void keyPressed() {
   println("keypressed: " + key);
+  if (key == '+') {
+    for (int i = 0; i < frets.length; i++) {
+      roots[i] = tune(roots[i], 1);
+    }
+  }
+  if (key == '_') {
+    for (int i = 0; i < frets.length; i++) {
+      roots[i] = tune(roots[i], -1);
+    }
+  }
   if (playing && (key == lastKey)) {
     return;
   }
@@ -81,9 +91,9 @@ void setup() {
   keysPressed = new StringList();
   font = createFont("Open Sans", 48, true);
   envelope = new Env(this);
-  float volume = 1;
+  float volume = 0.01;
   for (int i = 0; i < strings.length; i++) {
-    strings[i] = new SqrOsc(this);
+    strings[i] = new SawOsc(this);
     strings[i].amp(volume);
   }
 }
