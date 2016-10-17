@@ -4,10 +4,14 @@ final double SEMITONE_RATIO = pow(2.0, (1.0 / 12.0));
 
 float frequency;
 double root = 110.0;
+double[] roots = { 110.0, 146.832, 195.997, 261.63 };
+double secondRoot = 146.832;
+double thirdRoot = 110.0;
+double fourthRoot = 110.0;
 boolean playing = false;
 char lastKey = ' ';
 StringList keysPressed;
-SqrOsc string1;
+SqrOsc[] strings = new SqrOsc[4];
 PFont font;
 String note;
 Env envelope;
@@ -17,14 +21,12 @@ float sustainTime = 0.1;
 float sustainLevel = 0.1;
 float releaseTime = 0.2;
 
-// The home row is the white keys, with a = A, d = D, r = C#.
-// String keys = new String("awsdrftghujikol;[']");
-
-// Two rows of white and black keys, z = A, c = C, f = C#.
-String keys = new String("zsxcfvgbnjmk,l./'q2we4r5t6yu8i9op");
-
-// Chromatic
-// String keys = new String("zxcvbnm,./asdfghjkl;'qwertyuiop[]1234567890");
+String[] frets = {
+  "zxcvbnm,./",
+  "asdfghjkl;'",
+  "qwertyuiop[]",
+  "1234567890-="
+};
 
 String[] notes = {"A", "A\u266F", "B", "C", "C\u266F", "D", "D\u266F", "E", "F", "F\u266F", "G", "G\u266F"};
 
@@ -42,6 +44,16 @@ float tune(double currentFrequency, int intervalSemitones) {
   return (float) newFrequency;
 }
 
+void pluck(int fret) {
+    int keyInterval = frets[fret].indexOf(key);
+    frequency = tune(root, keyInterval);
+    note = notes[keyInterval % 12];
+    println(note + " : " + frequency);
+    strings[fret].play(frequency, 0.6);
+    envelope.play(strings[fret], attackTime, sustainTime, sustainLevel, releaseTime);
+    playing = true;
+}
+
 void keyPressed() {
   println("keypressed: " + key);
   if (key == '+' || key == '=') {
@@ -56,14 +68,8 @@ void keyPressed() {
   if (playing) {
     playing = false;
   }
-  if (keys.indexOf(key) != -1) {
-    int keyInterval = keys.indexOf(key);
-    frequency = tune(root, keyInterval);
-    note = notes[keyInterval % 12];
-    println(note + " : " + frequency);
-    string1.play(frequency, 0.6);
-    envelope.play(string1, attackTime, sustainTime, sustainLevel, releaseTime);
-    playing = true;
+  if (frets[0].indexOf(key) != -1) {
+    pluck(0);
   }
   lastKey = key;
 }
@@ -83,8 +89,16 @@ void setup() {
   font = createFont("Open Sans", 48, true);
   envelope = new Env(this);
   float volume = 1;
-  string1 = new SqrOsc(this);
-  string1.amp(volume);
+  strings[0] = new SqrOsc(this);
+  strings[0].amp(volume);
+  /*
+  secondString = new SqrOsc(this);
+  secondString.amp(volume);
+  thirdString = new SqrOsc(this);
+  thirdString.amp(volume);
+  fourthString = new SqrOsc(this);
+  fourthString.amp(volume);
+  */
   frequency = tune(root, 0);
 }
 
