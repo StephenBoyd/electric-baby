@@ -3,11 +3,7 @@ import processing.sound.*;
 final double SEMITONE_RATIO = pow(2.0, (1.0 / 12.0));
 
 float frequency;
-double root = 110.0;
-double[] roots = { 110.0, 146.832, 195.997, 261.63 };
-double secondRoot = 146.832;
-double thirdRoot = 110.0;
-double fourthRoot = 110.0;
+double[] roots = { 110.0, 146.832, 195.997, 246.94 };
 boolean playing = false;
 char lastKey = ' ';
 StringList keysPressed;
@@ -56,12 +52,6 @@ void pluck(int fret) {
 
 void keyPressed() {
   println("keypressed: " + key);
-  if (key == '+' || key == '=') {
-    root = root * 2;
-  }
-  if (key == '-') {
-    root = root / 2;
-  }
   if (playing && (key == lastKey)) {
     return;
   }
@@ -96,7 +86,6 @@ void setup() {
     strings[i] = new SqrOsc(this);
     strings[i].amp(volume);
   }
-  frequency = tune(root, 0);
 }
 
 void draw() {
